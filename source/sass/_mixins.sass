@@ -1,0 +1,110 @@
+/* Settings */
+$debug: true !default
+
+=clearfix
+  &:after
+    content: "."
+    display: block
+    clear: both
+    visibility: hidden
+    line-height: 0
+    height: 0
+
+=debug
+  @if $debug
+    outline: 1px solid red
+
+=debug-style
+  @if $debug
+    @content
+
+=border-radius($value)
+  -webkit-border-radius: $value
+  -moz-border-radius: $value
+  -o-border-radius: $value
+  border-radius: $value
+
+=box-sizing ( $prop: border-box )
+  -moz-box-sizing: $prop
+  -webkit-box-sizing: $prop
+  box-sizing: $prop
+
+=keyframes ( $name )
+  @-webkit-keyframes #{$name}
+    @content
+  @-moz-keyframes #{$name}
+    @content
+  @-ms-keyframes #{$name}
+    @content
+  @-khtml-keyframes #{$name}
+    @content
+  @keyframes #{$name}
+    @content
+
+=transition ( $prop... )
+  -webkit-transition: $prop
+  -moz-transition: $prop
+  -ms-transition: $prop
+  -khtml-transition: $prop
+  transition: $prop
+
+=transform ( $prop... )
+  -webkit-transform: $prop
+  -moz-transform: $prop
+  -ms-transform: $prop
+  -khtml-transition: $prop
+  transform: $prop
+
+=transform-origin ( $prop... )
+  -webkit-transform-origin: $prop
+  -moz-transform-origin: $prop
+  -ms-transform-origin: $prop
+  -khtml-transition-origin: $prop
+  transform-origin: $prop
+
+=animation ( $prop... )
+  -webkit-animation: $prop
+  -moz-animation: $prop
+  -ms-animation: $prop
+  -khtml-animation: $prop
+  animation: $prop
+
+=animation-play-state ( $prop... )
+  -webkit-animation-play-state: $prop
+  -moz-animation-play-state: $prop
+  -ms-animation-play-state: $prop
+  -khtml-animation-play-state: $prop
+  animation-play-state: $prop
+
+=opacity ( $prop )
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=#{$prop*100})"
+  filter: alpha(opacity=$prop*100)
+  -moz-opacity: $prop
+  -khtml-opacity: $prop
+  opacity: $prop
+
+=force-gpu
+  -webkit-transform: translate3d(0, 0, 0)
+
+=background-image-retina ( $imageName, $imageType)
+  background-image: url("#{$imageName}.#{$imageType}")
+
+  @media (-webkit-min-device-pixel-ratio: 2), (min--moz-device-pixel-ratio: 2), (min-device-pixel-ratio: 2)
+    background-image: url("#{$imageName}@2x.#{$imageType}")
+
+=user-select ( $prop )
+  -webkit-user-select: $prop
+  -moz-user-select: $prop
+  -ms-user-select: $prop
+  -o-user-select: $prop
+  user-select: $prop
+
+=linear-gradient($fromColor, $toColor)
+  background-color: $toColor
+  background-image: -webkit-gradient(linear, left top, left bottom, from($fromColor), to($toColor))
+  background-image: -webkit-linear-gradient(top, $fromColor, $toColor)
+  background-image: -moz-linear-gradient(top, $fromColor, $toColor)
+  background-image: -ms-linear-gradient(top, $fromColor, $toColor)
+  background-image: -o-linear-gradient(top, $fromColor, $toColor)
+  background-image: linear-gradient(top, $fromColor, $toColor)
+  // filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#{$fromColor}', EndColorStr='#{$toColor}')

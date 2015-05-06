@@ -1,0 +1,23 @@
+@import "reset"
+@import "mixins"
+@import "defaults"
+@import "browser-fixes"
+
+*, *:before, *:after
+  +box-sizing(border-box)
+
+html, body, #app, #content
+  height: 100%
+  width: 100%
+
+html, body, #app, #content, input, button, label
+  font-family: "raleway", sans-serif
+
+.admin-area
+  margin: 0 auto
+  width: 80%
+  > div
+    width: 100%
+    float: left
+    border: 1px solid #dcdcdc
+    background-color: #fbfbfb

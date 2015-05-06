@@ -9,7 +9,7 @@ gulp.task('cache-data', function(){
    var url = "https://docs.google.com/spreadsheet/pub?hl=en_US&hl=en_US&key=1HO3ZkhqUrbsVyoRaNvdMoiHySpd5pDrJBdq6pRynxvE&output=html";
 
    // fetch data from google sheets
-  Tabletop.init({ 
+  Tabletop.init({
     key: url,
     simpleSheet: true,
     callback: function(data, tabletop){
@@ -23,7 +23,7 @@ gulp.task('cache-data', function(){
 
       }, {}, this);
 
-      var cachedFile = 'frontend/root/data/cached.json';
+      var cachedFile = 'source/data/cached.json';
 
       fs.writeFile(cachedFile, JSON.stringify(data), function(){
         console.log(colors.cyan("Wrote data to " + cachedFile));

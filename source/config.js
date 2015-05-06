@@ -13,7 +13,7 @@ requirejs.config({
     "spin": "lib/spin.spin",
     "text": "lib/requirejs-text/text",
     "json": 'lib/requirejs-plugins/src/json',
-    
+
   },
 
   shim: {
@@ -24,5 +24,5 @@ requirejs.config({
     "velocity": { deps: ["jquery"] },
     "velocity-ui": { deps: ["velocity"] }
   }
-  
+
 });

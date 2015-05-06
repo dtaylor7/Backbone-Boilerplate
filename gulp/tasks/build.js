@@ -3,64 +3,76 @@ var colors = require('colors');
 var fs = require('fs');
 var uglify = require('gulp-uglify');
 var minifyCSS = require("gulp-minify-css");
-var clean = require("gulp-clean");
-
+var rjs = require('gulp-requirejs');
+var exec = require('child_process').exec;
+var clean = require('gulp-clean');
+var mkdirp = require('mkdirp');
+var gcallback = require('gulp-callback');
 var currDate = new Date().getTime();
 
-gulp.task('build', ["requirejsBuild", "concatCSS"], function(error){
-	if (error) console.log(error);
+gulp.task('clean', function(){
+  return gulp.src('www', {read: false})
+    .pipe(clean());
+});
 
-	// Edit and move the index.html file...
-	fs.readFile("frontend/root/index.html", {encoding: 'utf8'}, function (err, data) {
-		if (err) throw err;
+gulp.task('require', ["clean", "index"], function(done){
 
-		var index = data;
+  return rjs({
+      baseUrl: 'source',
+      mainConfigFile: 'source/config.js',
+      out: 'all.js',
+      name: 'init',
+      findNestedDependencies: true
+    })
+    .pipe(uglify({compress: true}))
+    .pipe(gulp.dest('www/js/'))
+    .pipe(gcallback(done));
 
-		var devMain = 'data-main="init"';
-		var liveMain = 'data-main="js/all"';
+});
 
-		// Change the environment variable to staging
-		index = index.replace("development", "live");
+gulp.task("index", ["clean"], function(done){
 
-		// Change require.js path...
-		index = index.replace("..", "js");
+  mkdirp('www', function(err) {});
 
-		// Change init to all...
-		index = index.replace(devMain, liveMain);
+  // Edit and move the index.html file...
+  fs.readFile("source/index.html", {encoding: 'utf8'}, function (err, data) {
+    if (err) throw err;
 
-		fs.writeFile('build/index.html', index, function(err){
-			if (err) throw err;
-		});
+    var index = data;
 
+    // add cachebuster bits
+    index = index.replace("urlArgs: null", "urlArgs: \""+currDate+"\"");
+    index = index.replace("css/all.css", "css/all.css?"+currDate);
+
+    var devMain = 'data-main="init"';
+    var liveMain = 'data-main="js/all"';
+
+    // Change init to all...
+    index = index.replace(devMain, liveMain);
+
+    fs.writeFile('www/index.html', index, function(err){
+      if (err) throw err;
+      done();
     });
 
-    // gulp.src('build', {read: false})
-    //     .pipe(clean());
+  });
 
-	// Copy images accross...
-    gulp.src(['frontend/root/images/**'])
-  	.pipe(gulp.dest('build/images'));
+});
 
-  	// Copy individual files and folders...
-  	gulp.src(['frontend/config.js'])
-	.pipe(uglify({
-		compress: true,
-		drop_console: true,
-		DEBUG: false
-	}))
-	.pipe(gulp.dest("build/"));
+gulp.task('build', ["sass", "clean", "require", "index"], function(done){
 
-  	gulp.src(['frontend/root/data/cached.json'])
-	// .pipe(uglify({compress: true}))
-	.pipe(gulp.dest("build/data/"));
-
-
-  	gulp.src(['frontend/lib/requirejs/require.js'])
-	.pipe(uglify({compress: true}))
-	.pipe(gulp.dest("build/js/lib/requirejs/"));
-
-	gulp.src(['build/css/all.css'])
-	.pipe(minifyCSS())
-	.pipe(gulp.dest("build/css/all.css"));
+  // Copy folders/files
+  gulp.src([
+      'source/images/**/*.*',
+      'source/templates/**/*.*',
+      'source/data/**/*.*',
+      'source/css/**/*.*',
+      'source/lib/requirejs/require.js'
+    ], { base: './source/' })
+    .pipe(gulp.dest('www'))
+    .on('end', function(){
+      done();
+      process.exit(0);
+    });
 
 });

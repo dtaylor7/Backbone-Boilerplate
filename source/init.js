@@ -2,8 +2,7 @@ require([
   'config'
 ], function(){
 
-  // Specific config
-  require.config({
+  var config = {
 
     baseUrl: ".",
 
@@ -11,22 +10,23 @@ require([
       "root": "."
     }
 
-  });
+  };
+
+  requirejs.config(config);
 
   // Start app
   requirejs([
     'js/globals',
-    // Libs
     'jquery',
     'underscore',
     'backbone',
+    'backbone-super',
     // Initialize scripts
     'js/routers/routers.main',
     'js/views/views.header',
-    'backbone-super',
     'velocity',
     'velocity-ui'
-  ], function(Globals, $, _, Backbone, Router, Header){
+  ], function(Globals, $, _, Backbone, Super, Router, Header){
 
     Globals.Router = new Router();
 

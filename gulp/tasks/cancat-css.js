@@ -1,10 +1,17 @@
 var gulp = require('gulp');
 var concatCss = require('gulp-concat-css');
 var uglify = require('gulp-uglify');
- 
+
 gulp.task('concatCSS', function () {
-  gulp.src(['frontend/**/*.css', '!frontend/lib/**/*.css'])
-    .pipe(concatCss("css/all.css"))    
-  // .pipe(uglify({compress: true}))
-    .pipe(gulp.dest('build/'));
+
+  // .pipe(sass({
+  //   errLogToConsole: true,
+  //   sourceComments: 'normal'
+  // }))
+
+  gulp.src(['source/**/*.css', '!source/lib/**/*.css'])
+    .pipe(concatCss("css/all.css"))
+    .pipe(uglify({compress: true}))
+    .pipe(gulp.dest('www/'));
+
 });

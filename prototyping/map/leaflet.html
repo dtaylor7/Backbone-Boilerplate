@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css" />
     <![endif]-->
     <script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+
+
+    <link rel="stylesheet" href="/source/lib/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="/source/lib/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    <script src="/source/lib/leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
+
+
+    <script src="/source/lib/underscore/underscore-min.js"></script>
     <script>
       function init() {
         var mapMinZoom = 0;
@@ -21,7 +29,8 @@
 
         var mapBounds = new L.LatLngBounds(
             map.unproject([0, 5632], mapMaxZoom),
-            map.unproject([10240, 0], mapMaxZoom));
+            map.unproject([10240, 0], mapMaxZoom)
+        );
 
         map.fitBounds(mapBounds);
 
@@ -32,30 +41,97 @@
           noWrap: true
         }).addTo(map);
 
-        var buildings = L.tileLayer('layers/buildings/{z}/{x}/{y}.png', {
-          minZoom: mapMinZoom, maxZoom: mapMaxZoom,
-          bounds: mapBounds,
-          attribution: 'Rendered with <a href="http://www.maptiler.com/">MapTiler</a>',
-          noWrap: true
-        }).addTo(map);
+        // var buildings = L.tileLayer('layers/buildings/{z}/{x}/{y}.png', {
+        //   minZoom: mapMinZoom, maxZoom: mapMaxZoom,
+        //   bounds: mapBounds,
+        //   attribution: 'Rendered with <a href="http://www.maptiler.com/">MapTiler</a>',
+        //   noWrap: true
+        // }).addTo(map);
 
-        var ram = L.tileLayer('layers/ram/{z}/{x}/{y}.png', {
-          minZoom: mapMinZoom, maxZoom: mapMaxZoom,
-          bounds: mapBounds,
-          attribution: 'Rendered with <a href="http://www.maptiler.com/">MapTiler</a>',
-          noWrap: true
-        }).addTo(map);
+        // var ram = L.tileLayer('layers/ram/{z}/{x}/{y}.png', {
+        //   minZoom: mapMinZoom, maxZoom: mapMaxZoom,
+        //   bounds: mapBounds,
+        //   attribution: 'Rendered with <a href="http://www.maptiler.com/">MapTiler</a>',
+        //   noWrap: true
+        // }).addTo(map);
 
-        var baseMaps = {
-            "Base": base
-        };
+        var markers = L.markerClusterGroup({ animateAddingMarkers : true });
+        var markersList = [];
 
-        var overlayMaps = {
-            "Buildings": buildings,
-            "Ram": ram
-        };
+        var createPolyLines = function(){
 
-        L.control.layers(baseMaps, overlayMaps).addTo(map);
+          for(var i = 0; i < 1000; i ++){
+
+            var coord = [_.random(10240), _.random(5632)];
+
+            var size1 = _.random(50, 300);
+            var size2 = _.random(50, 300);
+
+            var polyCords = [
+              map.unproject([coord[0]-size1, coord[1]], map.getMaxZoom()),
+              map.unproject([coord[0], coord[1]-size1], map.getMaxZoom()),
+              map.unproject([coord[0]+size2, coord[1]], map.getMaxZoom()),
+              map.unproject([coord[0], coord[1]+size2], map.getMaxZoom())
+            ];
+
+            var point = map.unproject(coord, map.getMaxZoom());
+
+            var point = new L.marker(point, {
+              color: 'red',
+              weight: 3,
+              opacity: 0.5,
+              smoothFactor: 1
+            });
+            point.coord = coord;
+            point.polyCords = polyCords;
+            markers.addLayer(point);
+
+            point.on('mouseover', function(e) {
+
+              var coord = e.target.coord;
+              var pointMap = e.target.polyCords;
+
+              e.target.poly = new L.polygon(pointMap, {
+                color: 'red',
+                weight: 3,
+                opacity: 0.5,
+                smoothFactor: 1
+              });
+              e.target.poly.addTo(map);
+
+            });
+
+            point.on('mouseout', function(e) {
+
+              map.removeLayer(e.target.poly);
+              delete e.target.poly;
+
+            });
+
+          }
+
+        }
+
+        createPolyLines();
+
+        map.addLayer(markers);
+
+        // // create a red polyline from an array of LatLng points
+        // var polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
+
+        // // zoom the map to the polyline
+        // map.fitBounds(polyline.getBounds());
+
+        // var baseMaps = {
+        //     "Base": base
+        // };
+
+        // var overlayMaps = {
+        //     "Buildings": buildings,
+        //     "Ram": ram
+        // };
+
+        // L.control.layers(baseMaps, overlayMaps).addTo(map);
       }
     </script>
     <style>

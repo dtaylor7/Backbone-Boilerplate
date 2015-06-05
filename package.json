@@ -24,5 +24,9 @@
   },
   "engines": {
     "node": "0.10.x"
+  },
+  "dependencies": {
+    "json2csv": "^2.3.0",
+    "mongodb": "^2.0.33"
   }
 }
